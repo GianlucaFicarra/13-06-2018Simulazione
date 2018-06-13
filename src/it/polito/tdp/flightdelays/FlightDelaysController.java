@@ -1,9 +1,12 @@
 package it.polito.tdp.flightdelays;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.flightdelays.model.Airline;
 import it.polito.tdp.flightdelays.model.Model;
+import it.polito.tdp.flightdelays.model.Tratta;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -25,7 +28,7 @@ public class FlightDelaysController {
     private TextArea txtResult;
 
     @FXML
-    private ComboBox<?> cmbBoxLineaAerea;
+    private ComboBox<Airline> cmbBoxLineaAerea;
 
     @FXML
     private Button caricaVoliBtn;
@@ -38,7 +41,31 @@ public class FlightDelaysController {
 
     @FXML
     void doCaricaVoli(ActionEvent event) {
-    		System.out.println("Carica voli!");
+    	
+    	Airline airline = cmbBoxLineaAerea.getValue();
+    	
+    	if(airline == null) {
+    		txtResult.setText("ERRORE: devi selezionare una linea aerea");
+    		return;
+    	}
+    	model.creaGrafo(airline);
+    	
+    	List<Tratta> rottePeggiori = model.getPeggioriRotte();
+    	
+    	if(rottePeggiori == null) {
+    		txtResult.setText("Nessuna rotta trovata.");
+    		return;
+    	}
+    	
+    	txtResult.setText("Le 10 rotte trovate, selezionando la linea aerea "+airline+" sono: \n");
+    	for(Tratta t : rottePeggiori) {
+    		txtResult.appendText("\n");
+    		txtResult.appendText("Aeroporto di origine: "+t.getSource()+"\n");
+    		txtResult.appendText("Aeroporto di destinazione: "+t.getDestination()+"\n");
+    		txtResult.appendText("Peso arco: "+t.getPeso()+"\n");
+    	}
+    	
+
     }
 
     @FXML
@@ -58,5 +85,6 @@ public class FlightDelaysController {
     
 	public void setModel(Model model) {
 		this.model=model;
+		cmbBoxLineaAerea.getItems().addAll(model.getAirlines());
 	}
 }

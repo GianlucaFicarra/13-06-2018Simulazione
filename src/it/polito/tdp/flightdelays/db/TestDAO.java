@@ -6,9 +6,9 @@ public class TestDAO {
 
 		FlightDelaysDAO dao = new FlightDelaysDAO();
 
-		System.out.println(dao.loadAllAirlines());
-		System.out.println(dao.loadAllAirports());
-		System.out.println(dao.loadAllFlights());
+//		System.out.println(dao.loadAllAirlines());
+//		System.out.println(dao.loadAllAirports());
+//		System.out.println(dao.loadAllFlights());
 	}
 
 }
