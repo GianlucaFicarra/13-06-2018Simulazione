@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 
 import it.polito.tdp.flightdelays.model.Airline;
 import it.polito.tdp.flightdelays.model.Model;
+import it.polito.tdp.flightdelays.model.Passeggero;
 import it.polito.tdp.flightdelays.model.Tratta;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -70,7 +71,28 @@ public class FlightDelaysController {
 
     @FXML
     void doSimula(ActionEvent event) {
-    		System.out.println("Simula!");
+    	
+    	try {
+    		int k = Integer.parseInt(numeroPasseggeriTxtInput.getText());
+    		int v = Integer.parseInt(numeroVoliTxtInput.getText());
+    		
+    		List<Passeggero> passeggeri = model.simula(k, v);
+    		
+    		if(passeggeri.isEmpty()) {
+    			txtResult.setText("Nessun passeggero risultante");
+    			return;
+    		}
+    		
+    		for(Passeggero p : passeggeri)  {
+    			txtResult.appendText("Passeggero "+p.getId()+" "+p.getRitardoAccumulato()+"\n");
+    		}
+    		
+    				
+    	} catch (NumberFormatException e) {
+    		txtResult.setText("ERRORE: devi inserire valori numerici");
+    		return;
+    	}
+    	
     }
 
     @FXML

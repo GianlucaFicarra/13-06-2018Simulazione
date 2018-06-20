@@ -6,7 +6,6 @@ public class Tratta {
 	private Airport destination;
 	private double media;
 	private double peso;
-	private double distanza;
 	
 	
 	public Tratta(Airport source, Airport destination, double media) {
@@ -36,16 +35,10 @@ public class Tratta {
 	public double getPeso() {
 		return peso;
 	}
-	public void setPeso() {
-		peso = (double)media/((double)distanza);
+	public void setPeso(double peso) {
+		this.peso = peso;
 	}
-	public void setDistanza(double distanza) {
-		this.distanza =distanza;
-	}
-	public double getDistanza() {
-		return distanza;
-	}
-	
+
 	
 
 }

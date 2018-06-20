@@ -29,7 +29,7 @@ public class Model {
 		dao = new FlightDelaysDAO();
 		airportMap = new AirportIdMap();
 		airlines = dao.loadAllAirlines();
-		airports = dao.loadAllAirports(airportMap);
+		//airports = dao.loadAllAirports(airportMap);
 		tratte = new LinkedList<>();
 	}
 	
@@ -37,41 +37,32 @@ public class Model {
 		return this.airlines;
 	}
 
+	// punto 1 - grafo
+	
 	public void creaGrafo(Airline airline) {
 		graph = new SimpleDirectedWeightedGraph<>(DefaultWeightedEdge.class);
 		
+		
+		airports = dao.getAirportFromAirline(airline, airportMap);
 		Graphs.addAllVertices(this.graph, this.airports);
 		
-		flights = dao.loadFlightsWithAirline(airline, airportMap);
+//		flights = dao.loadFlightsWithAirline(airline, airportMap);
 		tratte = dao.getRitardoMedioSuTratte(airline, airportMap);
-
-		for(Flight f : flights) {
-			Airport source = f.getSource();
-			Airport destination = f.getDestination();
+		
+		for(Tratta t : tratte) {
+			Airport source = t.getSource();
+			Airport destination = t.getDestination();
 			
 			if(source != null && destination != null && !source.equals(destination)) {
-				
-				// peso = mediaRitardi/distanza
-
-				//double mediaRitardi = dao.getRitardoMedioSuTratta(airline, source, destination);
-				//tratte.add(new Tratta(source, destination, mediaRitardi));
 				double distanza = LatLngTool.distance(new LatLng(source.getLatitude(),
 						source.getLongitude()), new LatLng(destination.getLatitude(), destination.getLongitude()), 
 						LengthUnit.KILOMETER);
-				double media = 0.0;
-				for(Tratta t : tratte) {
-					if(source.equals(t.getSource()) && destination.equals(t.getDestination())) {
-						media = t.getMedia();
-						t.setDistanza(distanza);
-						t.setPeso();
-					}
-				}
-				double peso = media/distanza;
-				
-				
+				double peso = t.getMedia()/distanza;
+				t.setPeso(peso);
 				Graphs.addEdge(this.graph, source, destination, peso);
 			}
 		}
+
 		
 		System.out.println("Vertici: "+graph.vertexSet().size());
 		System.out.println("Archi: "+graph.edgeSet().size());
@@ -79,7 +70,6 @@ public class Model {
 	
 	
 	public List<Tratta> getPeggioriRotte() {
-		
 		
 		Collections.sort(tratte, new Comparator<Tratta>() {
 
@@ -91,5 +81,16 @@ public class Model {
 		});
 		
 		return tratte.subList(0, 10);
+	}
+
+	
+	// punto 2 - simulatore
+	
+	public List<Passeggero> simula(int k, int v) {
+		Simulatore sim = new Simulatore();
+		sim.init(k, v, airports, dao);
+		sim.run();
+		
+		return sim.getPasseggeri();
 	}
 }
